@@ -92,8 +92,8 @@
                     'elevator': { name: 'エレベーター', car: 3, door: '2番ドア' }
                 }},
                 'yotsuya': { name: '四ツ谷駅', facilities: {
-                    'subway-transfer': { name: '地下鉄各線 のりかえ階段', car: 3, door: '3番ドア' },
-                    'stairs-exit': { name: 'JR改札口口・出口方面', car: 9, door: '2番ドア' }
+                    'subway-transfer': { name: '地下鉄各線 のりかえ階段 (前方)', car: 3, door: '3番ドア' },
+                    'stairs-exit': { name: 'JR改札口・出口方面 (後方)', car: 9, door: '2番ドア' }
                 }},
                 'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
             }}
@@ -125,10 +125,28 @@
                 }}
             }},
             down: { title: '中央線 快速 (高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
-                'mitaka': { name: '三鷹駅', facilities: { 'stairs-down1': { name: '中央改札口階段 (前方)', car: 4, door: '1番ドア' } }},
-                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' } }},
-                'yotsuya': { name: '四ツ谷駅', facilities: { 'red-down': { name: '赤坂口・丸ノ内線のりかえ', car: 3, door: '1番ドア' }, 'koji-down': { name: '麹町口・南北線のりかえ', car: 10, door: '2番ドア' } }},
-                'shinjuku': { name: '新宿駅', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' }, 'center': { name: '中央口方面階段', car: 6, door: '2番ドア' } }}
+                'shinjuku': { name: '新宿駅', facilities: { 
+                    'west-gate-down': { name: '東口・西口・各線乗換 (1号車)', car: 1, door: '4番ドア' },
+                    'center-gate-down': { name: '中央東口・中央西口改札 (5号車)', car: 5, door: '4番ドア' },
+                    'south-gate-down': { name: '南口・東南口方面 (9号車)', car: 9, door: '4番ドア' }
+                }},
+                'yotsuya': { name: '四ツ谷駅', facilities: { 
+                    'koji-down': { name: '麹町口・南北線のりかえ (5号車)', car: 5, door: '2番ドア' },
+                    'red-down': { name: '赤坂口・丸ノ内線のりかえ (12号車)', car: 12, door: '1番ドア' }
+                }},
+                'mitaka': { name: '三鷹駅', facilities: { 
+                    'escalator-down': { name: 'エスカレーター (5号車前方)', car: 5, door: '1番ドア' },
+                    'elevator-down': { name: 'エレベーター (6号車前方)', car: 6, door: '1番ドア' },
+                    'stairs-down1': { name: '階段 (6号車中方)', car: 6, door: '2番ドア' },
+                    'stairs-down2': { name: '階段 (8号車中方)', car: 8, door: '3番ドア' }
+                }},
+                'kokubunji': { name: '国分寺駅', facilities: { 
+                    'escalator-down1': { name: '西武線乗換エスカレーター (9号車後方)', car: 9, door: '1番ドア' },
+                    'elevator-down': { name: 'エレベーター (8号車中方)', car: 8, door: '2番ドア' },
+                    'escalator-down2': { name: 'エスカレーター (7号車中方)', car: 7, door: '2番ドア' },
+                    'stairs-down': { name: '改札口方面階段 (7号車後方)', car: 7, door: '1番ドア' },
+                    'escalator-down3': { name: 'エスカレーター (5号車中方)', car: 5, door: '2番ドア' }
+                }}
             }}
         }
     };
