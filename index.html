@@ -3,61 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>市ヶ谷駅ナビ</title>
+    <title>中央・総武線 ドア位置ナビ</title>
     <style>
-        body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:20px;color:#333}
-        .container{max-width:400px;margin:0 auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);text-align:center}
-        h1{font-size:1.2rem;margin-top:0;padding-bottom:10px;border-bottom:3px solid #fdd000}
-        select{width:100%;padding:12px;font-size:1rem;border:2px solid #ccc;border-radius:8px;margin-bottom:20px;background:#fff}
-        .result{background:#fffde6;border:2px solid #fdd000;border-radius:8px;padding:15px;margin-bottom:20px}
-        .car-text{font-size:1.8rem;font-weight:bold;color:#d0a000}
-        .door-text{font-size:1.2rem;margin-top:5px}
-        .visual{display:flex;flex-direction:row-reverse;justify-content:space-between;background:#eee;padding:10px;border-radius:6px}
-        .c{flex:1;height:35px;background:#fff;border:1px solid #ccc;margin:0 2px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#999;border-radius:4px}
-        .c.a{background:#fdd000;color:#333;transform:scale(1.1)}
-        .dir{display:flex;justify-content:space-between;font-size:0.75rem;color:#888;margin-top:5px}
+        :root { --sobu: #fdd000; --chuo: #f15a22; --dark: #333; --theme: #fdd000; }
+        body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 15px; color: var(--dark); }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.1rem; text-align: center; margin-top: 0; padding-bottom: 10px; border-bottom: 3px solid var(--theme); }
+        .tabs { display: flex; margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; }
+        .tab-btn { flex: 1; padding: 10px; font-size: 0.9rem; font-weight: bold; border: none; background: #eee; cursor: pointer; }
+        .tab-btn.sobu-active { background: var(--sobu); color: var(--dark); }
+        .tab-btn.chuo-active { background: var(--chuo); color: white; }
+        .dir-tabs { display: flex; margin-bottom: 15px; background: #e0e0e0; border-radius: 6px; padding: 3px; }
+        .dir-btn { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: bold; border: none; background: transparent; border-radius: 4px; cursor: pointer; }
+        .dir-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .select-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; }
+        select { width: 100%; padding: 10px; font-size: 0.95rem; border: 2px solid #ccc; border-radius: 8px; background: #fff; }
+        .result-box { background: #fafafa; border: 2px solid var(--theme); border-radius: 8px; padding: 15px; text-align: center; margin: 15px 0; }
+        .result-car { font-size: 1.6rem; font-weight: bold; }
+        .result-door { font-size: 1.1rem; margin-top: 4px; color: #555; }
+        .train-visual { display: flex; flex-direction: row-reverse; justify-content: space-between; background: #eee; padding: 10px; border-radius: 6px; }
+        .car { flex: 1; height: 32px; background: #fff; border: 1px solid #ccc; margin: 0 2px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #999; border-radius: 4px; }
+        .car.active { background: var(--theme); color: var(--dark); transform: scale(1.1); }
+        .chuo-theme .car.active { color: white; }
+        .direction { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 5px; padding: 0 2px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>市ヶ谷駅 ドア位置ナビ</h1>
-    <p style="font-size:0.9rem;color:#666;margin-top:-5px">総武線各駅停車 (千葉行)</p>
-    <label style="display:block;text-align:left;font-weight:bold;margin-bottom:5px">目的地：</label>
-    <select id="s" onchange="u()">
-        <option value="0">地下鉄のりかえ口 (下り階段)</option>
-        <option value="1">上り階段</option>
-        <option value="2">エレベーター</option>
-        <option value="3">上りエスカレーター</option>
-    </select>
-    <div class="result">
-        <div id="car" class="car-text">4号車</div>
-        <div id="door" class="door-text">4番ドア付近</div>
+<div class="container" id="app-container">
+    <h1 id="app-title">総武線 各駅停車</h1>
+    <div class="tabs">
+        <button class="tab-btn sobu-active" id="btn-sobu" onclick="switchLine('sobu')">総武線</button>
+        <button class="tab-btn" id="btn-chuo" onclick="switchLine('chuo')">中央線</button>
     </div>
-    <div class="visual" id="v"></div>
-    <div class="dir">
-        <span>← 新宿方面</span>
-        <span>千葉方面 (先頭) →</span>
+    <div class="dir-tabs">
+        <button class="dir-btn active" id="btn-up" onclick="switchDir('up')">上り方面</button>
+        <button class="dir-btn" id="btn-down" onclick="switchDir('down')">下り方面</button>
+    </div>
+    <div class="select-group">
+        <label for="station-select">駅名：</label>
+        <select id="station-select" onchange="updateFacilities()"></select>
+    </div>
+    <div class="select-group">
+        <label for="facility-select">目的地：</label>
+        <select id="facility-select" onchange="updateResult()"></select>
+    </div>
+    <div class="result-box">
+        <div id="display-car" class="result-car">-- 号車</div>
+        <div id="display-door" class="result-door">-- 番ドア</div>
+    </div>
+    <div class="train-visual" id="train-cars"></div>
+    <div class="direction">
+        <span id="text-back">← 後方</span>
+        <span id="text-front">前方 (先頭) →</span>
     </div>
 </div>
 
-  <script>
-    const d=[{c:4,d:4},{c:7,d:3},{c:8,d:3},{c:9,d:3}];
-    function u(){
-        const v=document.getElementById('s').value;
-        const n=d[v];
-        document.getElementById('car').innerText=n.c+'号車';
-        document.getElementById('door').innerText=n.d+'番ドア付近';
-        const e=document.getElementById('v');
-        e.innerHTML='';
-        for(let i=1;i<=10;i++){
-            const b=document.createElement('div');
-            b.className='c';
-            b.innerText=i;
-            if(i===n.c)b.classList.add('a');
-            e.appendChild(b);
+    <script>
+    const stationData = {
+        sobu: {
+            color: '#fdd000',
+            up: { title: '総武線 各駅停車 (新宿・御茶ノ水・千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'subway': { name: '地下鉄のりかえ口 (下り階段)', car: 4, door: '4番ドア' }, 'stairs-up': { name: '上り階段', car: 7, door: '3番ドア' }, 'elevator': { name: 'エレベーター', car: 8, door: '3番ドア' } } },
+                'mitaka': { name: '三鷹駅 (当駅始発)', facilities: { 'stairs-center': { name: '中央改札口階段', car: 5, door: '3番ドア' }, 'elevator-main': { name: 'エレベーター', car: 6, door: '1番ドア' } } }
+            }},
+            down: { title: '総武線 各駅停車 (中野・三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'subway': { name: '地下鉄のりかえ口', car: 7, door: '1番ドア' }, 'stairs': { name: '中央口方面階段', car: 4, door: '2番ドア' } } },
+                'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
+            }}
+        },
+        chuo: {
+            color: '#f15a22',
+            up: { title: '中央線 快速 (新宿・東京方面行)', front: '東京方面 →', back: '← 高尾方面', stations: {
+                'kokubunji': { name: '国分寺駅', facilities: { 'seibu-transfer': { name: '西武線連絡・改札口階段', car: 4, door: '3番ドア' }, 'stairs-tokyo': { name: '中央改札方面階段', car: 8, door: '2番ドア' }, 'elevator': { name: 'エレベーター', car: 5, door: '4番ドア' } } },
+                'yotsuya': { name: '四ツ谷駅', facilities: { 'marunouchi': { name: '丸ノ内線のりかえ階段', car: 1, door: '4番ドア' }, 'elevator': { name: 'エレベーター', car: 2, door: '3番ドア' } } }
+            }},
+            down: { title: '中央線 快速 (立川・八王子・高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
+                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' }, 'escalator': { name: 'エスカレーター', car: 7, door: '3番ドア' } } },
+                'shinjuku': { name: '新宿駅', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' }, 'west': { name: '西口方面階段', car: 10, door: '4番ドア' } } }
+            }}
+        }
+    };
+
+    let currentLine = 'sobu';
+    let currentDir = 'up';
+
+    function switchLine(line) {
+        currentLine = line;
+        const bS = document.getElementById('btn-sobu'); const bC = document.getElementById('btn-chuo'); const cnt = document.getElementById('app-container');
+        if (line === 'sobu') { bS.classList.add('sobu-active'); bC.classList.remove('chuo-active'); cnt.classList.remove('chuo-theme'); }
+        else { bS.classList.remove('sobu-active'); bC.classList.add('chuo-active'); cnt.classList.add('chuo-theme'); }
+        updateLayout();
+    }
+
+    function switchDir(dir) {
+        currentDir = dir;
+        document.getElementById('btn-up').classList.toggle('active', dir === 'up');
+        document.getElementById('btn-down').classList.toggle('active', dir === 'down');
+        updateLayout();
+    }
+
+    function updateLayout() {
+        const d = stationData[currentLine][currentDir];
+        document.documentElement.style.setProperty('--theme', stationData[currentLine].color);
+        document.getElementById('app-title').innerText = d.title;
+        document.getElementById('text-front').innerText = d.front;
+        document.getElementById('text-back').innerText = d.back;
+
+        const sS = document.getElementById('station-select'); sS.innerHTML = '';
+        for (let k in d.stations) {
+            let o = document.createElement('option'); o.value = k; o.innerText = d.stations[k].name; sS.appendChild(o);
+        }
+        updateFacilities();
+    }
+
+    function updateFacilities() {
+        const sS = document.getElementById('station-select').value;
+        const fS = document.getElementById('facility-select'); fS.innerHTML = '';
+        const fList = stationData[currentLine][currentDir].stations[sS].facilities;
+        for (let k in fList) {
+            let o = document.createElement('option'); o.value = k; o.innerText = fList[k].name; fS.appendChild(o);
+        }
+        updateResult();
+    }
+
+    function updateResult() {
+        const sS = document.getElementById('station-select').value;
+        const fS = document.getElementById('facility-select').value;
+        const res = stationData[currentLine][currentDir].stations[sS].facilities[fS];
+
+        document.getElementById('display-car').innerText = `${res.car}号車`;
+        document.getElementById('display-door').innerText = `${res.door}付近`;
+
+        const tc = document.getElementById('train-cars'); tc.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            let c = document.createElement('div'); c.className = 'car'; c.innerText = i;
+            if (i === res.car) c.classList.add('active');
+            tc.appendChild(c);
         }
     }
-    window.onload=u;
+
+    window.onload = function() { switchLine('sobu'); };
 </script>
 </body>
 </html>
