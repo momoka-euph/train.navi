@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>市ヶ谷駅ナビ</title>
+    <style>
+        body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:20px;color:#333}
+        .container{max-width:400px;margin:0 auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);text-align:center}
+        h1{font-size:1.2rem;margin-top:0;padding-bottom:10px;border-bottom:3px solid #fdd000}
+        select{width:100%;padding:12px;font-size:1rem;border:2px solid #ccc;border-radius:8px;margin-bottom:20px;background:#fff}
+        .result{background:#fffde6;border:2px solid #fdd000;border-radius:8px;padding:15px;margin-bottom:20px}
+        .car-text{font-size:1.8rem;font-weight:bold;color:#d0a000}
+        .door-text{font-size:1.2rem;margin-top:5px}
+        .visual{display:flex;flex-direction:row-reverse;justify-content:space-between;background:#eee;padding:10px;border-radius:6px}
+        .c{flex:1;height:35px;background:#fff;border:1px solid #ccc;margin:0 2px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#999;border-radius:4px}
+        .c.a{background:#fdd000;color:#333;transform:scale(1.1)}
+        .dir{display:flex;justify-content:space-between;font-size:0.75rem;color:#888;margin-top:5px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>市ヶ谷駅 ドア位置ナビ</h1>
+    <p style="font-size:0.9rem;color:#666;margin-top:-5px">総武線各駅停車 (千葉行)</p>
+    <label style="display:block;text-align:left;font-weight:bold;margin-bottom:5px">目的地：</label>
+    <select id="s" onchange="u()">
+        <option value="0">地下鉄のりかえ口 (下り階段)</option>
+        <option value="1">上り階段</option>
+        <option value="2">エレベーター</option>
+        <option value="3">上りエスカレーター</option>
+    </select>
+    <div class="result">
+        <div id="car" class="car-text">4号車</div>
+        <div id="door" class="door-text">4番ドア付近</div>
+    </div>
+    <div class="visual" id="v"></div>
+    <div class="dir">
+        <span>← 新宿方面</span>
+        <span>千葉方面 (先頭) →</span>
+    </div>
+</div>
+
+  <script>
+    const d=[{c:4,d:4},{c:7,d:3},{c:8,d:3},{c:9,d:3}];
+    function u(){
+        const v=document.getElementById('s').value;
+        const n=d[v];
+        document.getElementById('car').innerText=n.c+'号車';
+        document.getElementById('door').innerText=n.d+'番ドア付近';
+        const e=document.getElementById('v');
+        e.innerHTML='';
+        for(let i=1;i<=10;i++){
+            const b=document.createElement('div');
+            b.className='c';
+            b.innerText=i;
+            if(i===n.c)b.classList.add('a');
+            e.appendChild(b);
+        }
+    }
+    window.onload=u;
+</script>
+</body>
+</html>
