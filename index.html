@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>中央・総武線 ドア位置ナビ pro</title>
+    <title>市ヶ谷・主要路線 ドア位置ナビ pro</title>
     <style>
-        :root { --sobu: #fdd000; --chuo: #f15a22; --dark: #333; --theme: #fdd000; }
+        :root { --theme: #fdd000; --dark: #333; }
         body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 15px; color: var(--dark); }
         .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { font-size: 1.1rem; text-align: center; margin-top: 0; padding-bottom: 5px; }
         .accuracy-badge { text-align: center; font-size: 0.75rem; color: #777; margin-bottom: 10px; }
-        .tabs { display: flex; margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; }
-        .tab-btn { flex: 1; padding: 10px; font-size: 0.9rem; font-weight: bold; border: none; background: #eee; cursor: pointer; }
-        .tab-btn.sobu-active { background: var(--sobu); color: var(--dark); }
-        .tab-btn.chuo-active { background: var(--chuo); color: white; }
+        .line-selector { margin-bottom: 12px; }
+        .line-selector select { border: 2px solid var(--theme); font-weight: bold; background: #fffde6; }
         .dir-tabs { display: flex; margin-bottom: 15px; background: #e0e0e0; border-radius: 6px; padding: 3px; }
         .dir-btn { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: bold; border: none; background: transparent; border-radius: 4px; cursor: pointer; }
         .dir-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
@@ -25,24 +23,33 @@
         .result-door { font-size: 1.1rem; margin-top: 4px; color: #555; }
         .train-visual { display: flex; flex-direction: row-reverse; justify-content: space-between; background: #eee; padding: 10px; border-radius: 6px; overflow-x: auto; }
         .car { flex: 1; min-width: 22px; height: 32px; background: #fff; border: 1px solid #ccc; margin: 0 2px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; color: #999; border-radius: 4px; }
-        .car.active { background: var(--theme); color: var(--dark); transform: scale(1.1); }
-        .chuo-theme .car.active { color: white; }
+        .car.active { background: var(--theme); color: white; transform: scale(1.1); font-weight: bold; }
+        .light-text .car.active { color: var(--dark); }
         .direction { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 5px; margin-bottom: 15px; padding: 0 2px; }
         .wadattsu-link { display: block; text-align: center; background: #4a69bd; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 <div class="container" id="app-container">
-    <h1 id="app-title">中央・総武線 ドア位置ナビ</h1>
+    <h1 id="app-title">主要路線 ドア位置ナビ</h1>
     <div class="accuracy-badge">データ参照元：<span style="color:#4a69bd;font-weight:bold;">わだっつログ (現地調査データ)</span></div>
     
-    <div class="tabs">
-        <button class="tab-btn sobu-active" id="btn-sobu" onclick="switchLine('sobu')">総武線</button>
-        <button class="tab-btn" id="btn-chuo" onclick="switchLine('chuo')">中央線</button>
+    <div class="select-group line-selector">
+        <label for="line-select">選択路線：</label>
+        <select id="line-select" onchange="switchLine()">
+            <option value="sobu">■ 総武線各駅停車</option>
+            <option value="chuo">■ 中央線快速</option>
+            <option value="yamanote">■ 山手線</option>
+            <option value="keihin">■ 京浜東北線</option>
+            <option value="yurakucho">■ 東京メトロ有楽町線</option>
+            <option value="nanboku">■ 東京メトロ南北線</option>
+            <option value="shinjuku">■ 都営新宿線</option>
+        </select>
     </div>
+
     <div class="dir-tabs">
-        <button class="dir-btn active" id="btn-up" onclick="switchDir('up')">上り方面</button>
-        <button class="dir-btn" id="btn-down" onclick="switchDir('down')">下り方面</button>
+        <button class="dir-btn active" id="btn-up" onclick="switchDir('up')">A方面</button>
+        <button class="dir-btn" id="btn-down" onclick="switchDir('down')">B方面</button>
     </div>
     <div class="select-group">
         <label for="station-select">駅名：</label>
@@ -67,97 +74,79 @@
 
     <script>
     const stationData = {
-        sobu: {
-            color: '#fdd000',
-            maxCars: 10,
+        sobu: { color: '#fdd000', maxCars: 10, isLight: true, labelUp: '上り (千葉方面)', labelDown: '下り (三鷹方面)',
             up: { title: '総武線 各駅停車 (千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
-                'ichigaya': { name: '市ヶ谷駅', facilities: { 
-                    'yurakucho': { name: '有楽町線・都営新宿線 のりかえ (下り階段)', car: 4, door: '4番ドア' },
-                    'nanboku': { name: '南北線 のりかえ (下り階段奥)', car: 4, door: '3番ドア' },
-                    'stairs-up': { name: 'JR中央改札・地上出口 (上り階段)', car: 7, door: '3番ドア' },
-                    'elevator': { name: 'エレベーター', car: 8, door: '3番ドア' },
-                    'escalator-up': { name: '上りエスカレーター', car: 9, door: '3番ドア' }
-                }},
-                'yotsuya': { name: '四ツ谷駅', facilities: {
-                    'marunouchi': { name: '丸ノ内線 のりかえ階段 (前方)', car: 2, door: '2番ドア' },
-                    'nanboku': { name: '南北線 のりかえ階段 (後方)', car: 8, door: '3番ドア' },
-                    'elevator': { name: 'エレベーター', car: 5, door: '2番ドア' }
-                }},
-                'mitaka': { name: '三鷹駅 (当駅始発)', facilities: { 'stairs-center': { name: '中央改札口・出口階段', car: 5, door: '3番ドア' }, 'elevator-main': { name: 'エレベーター', car: 6, door: '1番ドア' } } }
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'yurakucho': { name: '有楽町線・都営新宿線 (下り階段)', car: 4, door: '4番ドア' }, 'nanboku': { name: '南北線 のりかえ (下り階段奥)', car: 4, door: '3番ドア' }, 'stairs-up': { name: 'JR中央改札 (上り階段)', car: 7, door: '3番ドア' }, 'elevator': { name: 'エレベーター', car: 8, door: '3番ドア' } }},
+                'mitaka': { name: '三鷹駅', facilities: { 'stairs-center': { name: '中央改札口・出口階段', car: 5, door: '3番ドア' } }}
             }},
             down: { title: '総武線 各駅停車 (三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
-                'ichigaya': { name: '市ヶ谷駅', facilities: { 
-                    'subway-transfer': { name: '地下鉄各線 のりかえ口 (下り階段)', car: 7, door: '1番ドア' },
-                    'stairs-exit': { name: 'JR中央改札・地上出口 (上り階段)', car: 4, door: '2番ドア' },
-                    'elevator': { name: 'エレベーター', car: 3, door: '2番ドア' }
-                }},
-                'yotsuya': { name: '四ツ谷駅', facilities: {
-                    'subway-transfer': { name: '地下鉄各線 のりかえ階段 (前方)', car: 3, door: '3番ドア' },
-                    'stairs-exit': { name: 'JR改札口・出口方面 (後方)', car: 9, door: '2番ドア' }
-                }},
-                'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'subway': { name: '地下鉄各線 のりかえ口 (下り階段)', car: 7, door: '1番ドア' }, 'stairs-exit': { name: 'JR中央改札 (上り階段)', car: 4, door: '2番ドア' } }}
             }}
         },
-        chuo: {
-            color: '#f15a22',
-            maxCars: 12,
+        chuo: { color: '#f15a22', maxCars: 12, isLight: false, labelUp: '上り (東京方面)', labelDown: '下り (高尾方面)',
             up: { title: '中央線 快速 (東京方面行)', front: '東京方面 →', back: '← 高尾方面', stations: {
-                'mitaka': { name: '三鷹駅', facilities: { 
-                    'escalator-up': { name: '上りエスカレーター (5号車前方)', car: 5, door: '1番ドア' },
-                    'elevator-up': { name: 'エレベーター (6号車前方)', car: 6, door: '1番ドア' },
-                    'stairs-up1': { name: '上り階段 (6号車中方)', car: 6, door: '2番ドア' },
-                    'stairs-up2': { name: '上り階段 (8号車中方)', car: 8, door: '3番ドア' }
-                }},
-                'kokubunji': { name: '国分寺駅', facilities: { 
-                    'stairs-main': { name: '中央改札・西武線乗換階段 (4号車)', car: 4, door: '3番ドア' },
-                    'stairs-tokyo': { name: '中央改札口階段 (8号車)', car: 8, door: '2番ドア' },
-                    'elevator': { name: 'エレベーター (5号車)', car: 5, door: '4番ドア' }
-                }},
-                'yotsuya': { name: '四ツ谷駅', facilities: { 
-                    'red-gate': { name: '赤坂口・丸ノ内線のりかえ (1号車)', car: 1, door: '4番ドア' },
-                    'koji-gate': { name: '麹町口・南北線のりかえ (8号車)', car: 8, door: '3番ドア' },
-                    'elevator': { name: 'エレベーター (2号車)', car: 2, door: '3番ドア' }
-                }},
-                'shinjuku': { name: '新宿駅', facilities: { 
-                    'south-gate': { name: '南口・東南口方面階段 (2号車)', car: 2, door: '4番ドア' },
-                    'center-gate': { name: '中央東口・中央西口方面階段 (6号車)', car: 6, door: '4番ドア' },
-                    'west-gate': { name: '東口・西口方面階段 (10号車)', car: 10, door: '4番ドア' }
-                }}
+                'mitaka': { name: '三鷹駅', facilities: { 'escalator-up': { name: '上りエスカレーター (5号車前方)', car: 5, door: '1番ドア' }, 'elevator-up': { name: 'エレベーター (6号車前方)', car: 6, door: '1番ドア' } }},
+                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-main': { name: '中央改札・西武線乗換 (4号車)', car: 4, door: '3番ドア' } }}
             }},
             down: { title: '中央線 快速 (高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
-                'shinjuku': { name: '新宿駅', facilities: { 
-                    'west-gate-down': { name: '東口・西口・各線乗換 (1号車)', car: 1, door: '4番ドア' },
-                    'center-gate-down': { name: '中央東口・中央西口改札 (5号車)', car: 5, door: '4番ドア' },
-                    'south-gate-down': { name: '南口・東南口方面 (9号車)', car: 9, door: '4番ドア' }
-                }},
-                'yotsuya': { name: '四ツ谷駅', facilities: { 
-                    'koji-down': { name: '麹町口・南北線のりかえ (5号車)', car: 5, door: '2番ドア' },
-                    'red-down': { name: '赤坂口・丸ノ内線のりかえ (12号車)', car: 12, door: '1番ドア' }
-                }},
-                'mitaka': { name: '三鷹駅', facilities: { 
-                    'escalator-down': { name: 'エスカレーター (5号車前方)', car: 5, door: '1番ドア' },
-                    'elevator-down': { name: 'エレベーター (6号車前方)', car: 6, door: '1番ドア' },
-                    'stairs-down1': { name: '階段 (6号車中方)', car: 6, door: '2番ドア' },
-                    'stairs-down2': { name: '階段 (8号車中方)', car: 8, door: '3番ドア' }
-                }},
-                'kokubunji': { name: '国分寺駅', facilities: { 
-                    'escalator-down1': { name: '西武線乗換エスカレーター (9号車後方)', car: 9, door: '1番ドア' },
-                    'elevator-down': { name: 'エレベーター (8号車中方)', car: 8, door: '2番ドア' },
-                    'escalator-down2': { name: 'エスカレーター (7号車中方)', car: 7, door: '2番ドア' },
-                    'stairs-down': { name: '改札口方面階段 (7号車後方)', car: 7, door: '1番ドア' },
-                    'escalator-down3': { name: 'エスカレーター (5号車中方)', car: 5, door: '2番ドア' }
-                }}
+                'kokubunji': { name: '国分寺駅', facilities: { 'escalator-down1': { name: '西武線乗換エスカレーター (9号車)', car: 9, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター (8号車)', car: 8, door: '2番ドア' } }}
+            }}
+        },
+        yamanote: { color: '#80c241', maxCars: 11, isLight: true, labelUp: '内回り (品川方面)', labelDown: '外回り (上野方面)',
+            up: { title: '山手線 内回り (品川・渋谷方面)', front: '進行方向 →', back: '← 後方', stations: {
+                'shinjuku': { name: '新宿駅 (14番線)', facilities: { 'south-stairs': { name: '南口・東南口方面階段', car: 2, door: '2番ドア' } }}
+            }},
+            down: { title: '山手線 外回り (東京・上野方面)', front: '進行方向 →', back: '← 後方', stations: {
+                'shinjuku': { name: '新宿駅 (15番線)', facilities: { 'south-stairs': { name: '南口・東南口方面階段', car: 2, door: '4番ドア' } }}
+            }}
+        },
+        keihin: { color: '#00b2e3', maxCars: 10, isLight: false, labelUp: '北行 (大宮方面)', labelDown: '南行 (大船方面)',
+            up: { title: '京浜東北線 北行 (上野・大宮方面)', front: '大宮方面 →', back: '← 大船方面', stations: {
+                'tokyo': { name: '東京駅 (3番線)', facilities: { 'central-stairs': { name: '中央通路方面階段', car: 5, door: '2番ドア' } }}
+            }},
+            down: { title: '京浜東北線 南行 (品川・大船方面)', front: '大船方面 →', back: '← 大宮方面', stations: {
+                'tokyo': { name: '東京駅 (6番線)', facilities: { 'central-stairs': { name: '中央通路方面階段', car: 6, door: '3番ドア' } }}
+            }}
+        },
+        yurakucho: { color: '#c1a470', maxCars: 10, isLight: false, labelUp: '新木場方面', labelDown: '和光市方面',
+            up: { title: '有楽町線 (新木場方面行)', front: '新木場方面 →', back: '← 和光市方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 7, door: '2番ドア' }, 'shinjuku-transfer': { name: '都営新宿線 のりかえ連絡通路', car: 1, door: '1番ドア' }, 'hachiman-gate': { name: '市ヶ谷八幡方面改札 (出口1〜4)', car: 10, door: '4番ドア' } }}
+            }},
+            down: { title: '有楽町線 (和光市方面行)', front: '和光市方面 →', back: '← 新木場方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 4, door: '3番ドア' }, 'shinjuku-transfer': { name: '都営新宿線 のりかえ連絡通路', car: 10, door: '4番ドア' }, 'hachiman-gate': { name: '市ヶ谷八幡方面改札 (出口1〜4)', car: 1, door: '1番ドア' } }}
+            }}
+        },
+        nanboku: { color: '#00ac9a', maxCars: 6, isLight: false, labelUp: '赤羽岩淵方面', labelDown: '目黒方面',
+            up: { title: '南北線 (赤羽岩淵方面行)', front: '赤羽岩淵方面 →', back: '← 目黒方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ専用改札連絡階段', car: 1, door: '1番ドア' }, 'yurakucho-transfer': { name: '有楽町線 のりかえ階段', car: 4, door: '2番ドア' }, 'idabashi-gate': { name: '市ヶ谷田町方面改札 (出口5〜7)', car: 6, door: '4番ドア' } }}
+            }},
+            down: { title: '南北線 (目黒方面行)', front: '目黒方面 →', back: '← 赤羽岩淵方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ専用改札連絡階段', car: 6, door: '4番ドア' }, 'yurakucho-transfer': { name: '有楽町線 のりかえ階段', car: 3, door: '3番ドア' }, 'idabashi-gate': { name: '市ヶ谷田町方面改札 (出口5〜7)', car: 1, door: '1番ドア' } }}
+            }}
+        },
+        shinjuku: { color: '#6cbb5a', maxCars: 10, isLight: true, labelUp: '本八幡方面', labelDown: '新宿方面',
+            up: { title: '都営新宿線 (本八幡方面行)', front: '本八幡方面 →', back: '← 新宿方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'yurakucho-transfer': { name: '有楽町線 のりかえ通路 (スロープ)', car: 1, door: '1番ドア' }, 'jr-transfer': { name: 'JR総武線 のりかえ階段 (地下改札経由)', car: 7, door: '4番ドア' }, 'kudan-gate': { name: '靖国神社・市ヶ谷駅前方面改札 (出口A1〜A4)', car: 10, door: '4番ドア' } }}
+            }},
+            down: { title: '都営新宿線 (新宿・高尾山口方面行)', front: '新宿方面 →', back: '← 本八幡方面', stations: {
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 'yurakucho-transfer': { name: '有楽町線 のりかえ通路 (スロープ)', car: 10, door: '4番ドア' }, 'jr-transfer': { name: 'JR総武線 のりかえ階段 (地下改札経由)', car: 4, door: '1番ドア' }, 'kudan-gate': { name: '靖国神社・市ヶ谷駅前方面改札 (出口A1〜A4)', car: 1, door: '1番ドア' } }}
             }}
         }
     };
 
     let currentLine = 'sobu'; let currentDir = 'up';
 
-    function switchLine(line) {
-        currentLine = line;
-        const bS = document.getElementById('btn-sobu'); const bC = document.getElementById('btn-chuo'); const cnt = document.getElementById('app-container');
-        if (line === 'sobu') { bS.classList.add('sobu-active'); bC.classList.remove('chuo-active'); cnt.classList.remove('chuo-theme'); }
-        else { bS.classList.remove('sobu-active'); bC.classList.add('chuo-active'); cnt.classList.add('chuo-theme'); }
+    function switchLine() {
+        currentLine = document.getElementById('line-select').value;
+        const conf = stationData[currentLine];
+        
+        document.documentElement.style.setProperty('--theme', conf.color);
+        const container = document.getElementById('app-container');
+        container.className = 'container' + (conf.isLight ? ' light-text' : '');
+
+        document.getElementById('btn-up').innerText = conf.labelUp;
+        document.getElementById('btn-down').innerText = conf.labelDown;
+
         updateLayout();
     }
 
@@ -170,11 +159,21 @@
 
     function updateLayout() {
         const d = stationData[currentLine][currentDir];
-        document.documentElement.style.setProperty('--theme', stationData[currentLine].color);
         document.getElementById('app-title').innerText = d.title;
-        document.getElementById('text-front').innerText = d.front; document.getElementById('text-back').innerText = d.back;
+        document.getElementById('text-front').innerText = d.front; 
+        document.getElementById('text-back').innerText = d.back;
 
         const sS = document.getElementById('station-select'); sS.innerHTML = '';
+        
+        if (!d || !d.stations || Object.keys(d.stations).length === 0) {
+            let o = document.createElement('option'); o.innerText = 'データ準備中'; sS.appendChild(o);
+            document.getElementById('facility-select').innerHTML = '';
+            document.getElementById('display-car').innerText = '-- 号車';
+            document.getElementById('display-door').innerText = '-- 番ドア';
+            document.getElementById('train-cars').innerHTML = '';
+            return;
+        }
+
         for (let k in d.stations) {
             let o = document.createElement('option'); o.value = k; o.innerText = d.stations[k].name; sS.appendChild(o);
         }
@@ -183,6 +182,8 @@
 
     function updateFacilities() {
         const sS = document.getElementById('station-select').value;
+        if (!sS || sS === 'データ準備中') return;
+        
         const fS = document.getElementById('facility-select'); fS.innerHTML = '';
         const fList = stationData[currentLine][currentDir].stations[sS].facilities;
         for (let k in fList) {
@@ -192,9 +193,13 @@
     }
 
     function updateResult() {
-        const sS = document.getElementById('station-select').value; const fS = document.getElementById('facility-select').value;
+        const sS = document.getElementById('station-select').value; 
+        const fS = document.getElementById('facility-select').value;
+        if (!sS || !fS || sS === 'データ準備中') return;
+
         const res = stationData[currentLine][currentDir].stations[sS].facilities[fS];
-        document.getElementById('display-car').innerText = `${res.car}号車`; document.getElementById('display-door').innerText = `${res.door}付近`;
+        document.getElementById('display-car').innerText = `${res.car}号車`; 
+        document.getElementById('display-door').innerText = `${res.door}付近`;
 
         const tc = document.getElementById('train-cars'); tc.innerHTML = '';
         const maxCars = stationData[currentLine].maxCars;
@@ -204,7 +209,8 @@
             tc.appendChild(c);
         }
     }
-    window.onload = function() { switchLine('sobu'); };
+    
+    window.onload = function() { switchLine(); };
 </script>
 </body>
 </html>
