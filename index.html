@@ -58,35 +58,35 @@
         <span id="text-front">前方 (先頭) →</span>
     </div>
 </div>
-
-    <script>
+<script>
     const stationData = {
         sobu: {
             color: '#fdd000',
-            up: { title: '総武線 各駅停車 (新宿・御茶ノ水・千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
+            up: { title: '総武線 各駅停車 (千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'subway': { name: '地下鉄のりかえ口 (下り階段)', car: 4, door: '4番ドア' }, 'stairs-up': { name: '上り階段', car: 7, door: '3番ドア' }, 'elevator': { name: 'エレベーター', car: 8, door: '3番ドア' } } },
                 'mitaka': { name: '三鷹駅 (当駅始発)', facilities: { 'stairs-center': { name: '中央改札口階段', car: 5, door: '3番ドア' }, 'elevator-main': { name: 'エレベーター', car: 6, door: '1番ドア' } } }
             }},
-            down: { title: '総武線 各駅停車 (中野・三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
+            down: { title: '総武線 各駅停車 (三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'subway': { name: '地下鉄のりかえ口', car: 7, door: '1番ドア' }, 'stairs': { name: '中央口方面階段', car: 4, door: '2番ドア' } } },
                 'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
             }}
         },
         chuo: {
             color: '#f15a22',
-            up: { title: '中央線 快速 (新宿・東京方面行)', front: '東京方面 →', back: '← 高尾方面', stations: {
-                'kokubunji': { name: '国分寺駅', facilities: { 'seibu-transfer': { name: '西武線連絡・改札口階段', car: 4, door: '3番ドア' }, 'stairs-tokyo': { name: '中央改札方面階段', car: 8, door: '2番ドア' }, 'elevator': { name: 'エレベーター', car: 5, door: '4番ドア' } } },
-                'yotsuya': { name: '四ツ谷駅', facilities: { 'marunouchi': { name: '丸ノ内線のりかえ階段', car: 1, door: '4番ドア' }, 'elevator': { name: 'エレベーター', car: 2, door: '3番ドア' } } }
+            up: { title: '中央線 快速 (東京方面行)', front: '東京方面 →', back: '← 高尾方面', stations: {
+                'mitaka': { name: '三鷹駅', facilities: { 'stairs-up1': { name: '中央改札口階段 (中ほど)', car: 4, door: '1番ドア' }, 'stairs-up2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-up': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-up': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
+                'kokubunji': { name: '国分寺駅', facilities: { 'seibu-transfer': { name: '西武線連絡・改札口階段', car: 4, door: '3番ドア' }, 'stairs-tokyo': { name: '中央改札方面階段', car: 8, door: '2番ドア' } } },
+                'yotsuya': { name: '四ツ谷駅', facilities: { 'marunouchi': { name: '丸ノ内線のりかえ階段', car: 1, door: '4番ドア' } } }
             }},
-            down: { title: '中央線 快速 (立川・八王子・高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
-                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' }, 'escalator': { name: 'エスカレーター', car: 7, door: '3番ドア' } } },
-                'shinjuku': { name: '新宿駅', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' }, 'west': { name: '西口方面階段', car: 10, door: '4番ドア' } } }
+            down: { title: '中央線 快速 (高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
+                'mitaka': { name: '三鷹駅', facilities: { 'stairs-down1': { name: '中央改札口階段 (前方)', car: 4, door: '1番ドア' }, 'stairs-down2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
+                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' } } },
+                'shinjuku': { name: '新宿駅', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' } } }
             }}
         }
     };
 
-    let currentLine = 'sobu';
-    let currentDir = 'up';
+    let currentLine = 'sobu'; let currentDir = 'up';
 
     function switchLine(line) {
         currentLine = line;
@@ -107,8 +107,7 @@
         const d = stationData[currentLine][currentDir];
         document.documentElement.style.setProperty('--theme', stationData[currentLine].color);
         document.getElementById('app-title').innerText = d.title;
-        document.getElementById('text-front').innerText = d.front;
-        document.getElementById('text-back').innerText = d.back;
+        document.getElementById('text-front').innerText = d.front; document.getElementById('text-back').innerText = d.back;
 
         const sS = document.getElementById('station-select'); sS.innerHTML = '';
         for (let k in d.stations) {
@@ -128,12 +127,9 @@
     }
 
     function updateResult() {
-        const sS = document.getElementById('station-select').value;
-        const fS = document.getElementById('facility-select').value;
+        const sS = document.getElementById('station-select').value; const fS = document.getElementById('facility-select').value;
         const res = stationData[currentLine][currentDir].stations[sS].facilities[fS];
-
-        document.getElementById('display-car').innerText = `${res.car}号車`;
-        document.getElementById('display-door').innerText = `${res.door}付近`;
+        document.getElementById('display-car').innerText = `${res.car}号車`; document.getElementById('display-door').innerText = `${res.door}付近`;
 
         const tc = document.getElementById('train-cars'); tc.innerHTML = '';
         for (let i = 1; i <= 10; i++) {
@@ -142,7 +138,6 @@
             tc.appendChild(c);
         }
     }
-
     window.onload = function() { switchLine('sobu'); };
 </script>
 </body>
