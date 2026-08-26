@@ -28,13 +28,13 @@
         .car.active { background: var(--theme); color: var(--dark); transform: scale(1.1); }
         .chuo-theme .car.active { color: white; }
         .direction { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; margin-top: 5px; margin-bottom: 15px; padding: 0 2px; }
-        .yahoo-link { display: block; text-align: center; background: #ff0033; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .wadattsu-link { display: block; text-align: center; background: #4a69bd; color: white; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 <div class="container" id="app-container">
     <h1 id="app-title">中央・総武線 ドア位置ナビ</h1>
-    <div class="accuracy-badge">データ参照元：<span style="color:#ff0033;font-weight:bold;">Yahoo!乗換案内</span></div>
+    <div class="accuracy-badge">データ参照元：<span style="color:#4a69bd;font-weight:bold;">わだっつログ (現地調査データ)</span></div>
     
     <div class="tabs">
         <button class="tab-btn sobu-active" id="btn-sobu" onclick="switchLine('sobu')">総武線</button>
@@ -62,7 +62,7 @@
         <span id="text-front">前方 (先頭) →</span>
     </div>
 
-    <a href="https://transit.yahoo.co.jp/" target="_blank" class="yahoo-link" id="yahoo-btn">Yahoo!乗換案内でリアルタイム検索</a>
+    <a href="https://wadattsu261.com/stationhome-info/" target="_blank" class="wadattsu-link">わだっつログで元の調査情報を確認</a>
 </div>
 
     <script>
@@ -70,7 +70,7 @@
         sobu: {
             color: '#fdd000',
             up: { title: '総武線 各駅停車 (千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
-                'ichigaya': { name: '市ヶ谷駅', yahoo: '市ヶ谷', facilities: { 
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 
                     'yurakucho': { name: '有楽町線 のりかえ (下り階段手前)', car: 4, door: '4番ドア' },
                     'nanboku': { name: '南北線 のりかえ (下り階段奥)', car: 4, door: '3番ドア' },
                     'shinjuku-line': { name: '都営新宿線 のりかえ (下り階段)', car: 4, door: '4番ドア' },
@@ -78,28 +78,28 @@
                     'elevator': { name: 'エレベーター', car: 8, door: '3番ドア' },
                     'escalator-up': { name: '上りエスカレーター', car: 9, door: '3番ドア' }
                 }},
-                'mitaka': { name: '三鷹駅 (当駅始発)', yahoo: '三鷹', facilities: { 'stairs-center': { name: '中央改札口・出口階段', car: 5, door: '3番ドア' }, 'elevator-main': { name: 'エレベーター', car: 6, door: '1番ドア' } } }
+                'mitaka': { name: '三鷹駅 (当駅始発)', facilities: { 'stairs-center': { name: '中央改札口・出口階段', car: 5, door: '3番ドア' }, 'elevator-main': { name: 'エレベーター', car: 6, door: '1番ドア' } } }
             }},
             down: { title: '総武線 各駅停車 (三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
-                'ichigaya': { name: '市ヶ谷駅', yahoo: '市ヶ谷', facilities: { 
+                'ichigaya': { name: '市ヶ谷駅', facilities: { 
                     'subway-transfer': { name: '地下鉄各線 のりかえ口 (下り階段)', car: 7, door: '1番ドア' },
                     'stairs-exit': { name: 'JR中央改札・地上出口 (上り階段)', car: 4, door: '2番ドア' },
                     'elevator': { name: 'エレベーター', car: 3, door: '2番ドア' }
                 }},
-                'mitaka': { name: '三鷹駅 (終点)', yahoo: '三鷹', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
+                'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 4, door: '2番ドア' } } }
             }}
         },
         chuo: {
             color: '#f15a22',
             up: { title: '中央線 快速 (東京方面行)', front: '東京方面 →', back: '← 高尾方面', stations: {
-                'mitaka': { name: '三鷹駅', yahoo: '三鷹', facilities: { 'stairs-up1': { name: '中央改札口階段 (中ほど)', car: 4, door: '1番ドア' }, 'stairs-up2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-up': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-up': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
-                'kokubunji': { name: '国分寺駅', yahoo: '国分寺', facilities: { 'seibu-transfer': { name: '西武線連絡・改札口階段', car: 4, door: '3番ドア' }, 'stairs-tokyo': { name: '中央改札方面階段', car: 8, door: '2番ドア' } } },
-                'yotsuya': { name: '四ツ谷駅', yahoo: '四ツ谷', facilities: { 'marunouchi': { name: '丸ノ内線のりかえ階段', car: 1, door: '4番ドア' } } }
+                'mitaka': { name: '三鷹駅', facilities: { 'stairs-up1': { name: '中央改札口階段 (中ほど)', car: 4, door: '1番ドア' }, 'stairs-up2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-up': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-up': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
+                'kokubunji': { name: '国分寺駅', facilities: { 'seibu-transfer': { name: '西武線連絡・改札口階段', car: 4, door: '3番ドア' }, 'stairs-tokyo': { name: '中央改札方面階段', car: 8, door: '2番ドア' } } },
+                'yotsuya': { name: '四ツ谷駅', facilities: { 'marunouchi': { name: '丸ノ内線のりかえ階段', car: 1, door: '4番ドア' } } }
             }},
             down: { title: '中央線 快速 (高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
-                'mitaka': { name: '三鷹駅', yahoo: '三鷹', facilities: { 'stairs-down1': { name: '中央改札口階段 (前方)', car: 4, door: '1番ドア' }, 'stairs-down2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
-                'kokubunji': { name: '国分寺駅', yahoo: '国分寺', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' } } },
-                'shinjuku': { name: '新宿駅', yahoo: '新宿', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' } } }
+                'mitaka': { name: '三鷹駅', facilities: { 'stairs-down1': { name: '中央改札口階段 (前方)', car: 4, door: '1番ドア' }, 'stairs-down2': { name: '中央改札口階段 (後方)', car: 7, door: '2番ドア' }, 'escalator-down': { name: 'エスカレーター', car: 3, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター', car: 3, door: '3番ドア' } } },
+                'kokubunji': { name: '国分寺駅', facilities: { 'stairs-down': { name: '中央改札・西武線乗換階段', car: 4, door: '2番ドア' } } },
+                'shinjuku': { name: '新宿駅', facilities: { 'south': { name: '南口方面階段', car: 2, door: '4番ドア' } } }
             }}
         }
     };
@@ -124,6 +124,7 @@
     function updateLayout() {
         const d = stationData[currentLine][currentDir];
         document.documentElement.style.setProperty('--theme', stationData[currentLine].color);
+        document.getElementById('app-title').innerText = d.title;
         document.getElementById('text-front').innerText = d.front; document.getElementById('text-back').innerText = d.back;
 
         const sS = document.getElementById('station-select'); sS.innerHTML = '';
@@ -141,11 +142,6 @@
         for (let k in d.facilities) {
             let o = document.createElement('option'); o.value = k; o.innerText = d.facilities[k].name; fS.appendChild(o);
         }
-
-        // Yahoo!乗換案内ボタンのリンク先を現在選択中の駅に動的変更
-        const encodedStation = encodeURIComponent(d.name);
-        document.getElementById('yahoo-btn').href = `https://yahoo.co.jp{encodedStation}`;
-
         updateResult();
     }
 
