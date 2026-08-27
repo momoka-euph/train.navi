@@ -71,10 +71,9 @@
 
     <a href="https://wadattsu261.com" target="_blank" class="wadattsu-link">わだっつログで元の調査情報を確認</a>
 </div>
-
-    <script>
+<script>
     const stationData = {
-        sobu: { color: '#fdd000', maxCars: 10, isLight: true, labelUp: '上り (千葉方面)', labelDown: '下り (三鷹方面)',
+        sobu: { color: '#fdd000', maxCars: 10, isLight: true, labelUp: '上り (千葉方面)', labelDown: '下り (当駅始発/終点)',
             up: { title: '総武線 各駅停車 (千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 
                     'yurakucho': { name: '有楽町線・都営新宿線 のりかえ (前方・下り階段)', car: 4, door: '4番ドア' },
@@ -83,15 +82,23 @@
                     'elevator': { name: 'エレベーター (後方)', car: 8, door: '3番ドア' },
                     'escalator-up': { name: '上りエスカレーター (後方)', car: 9, door: '3番ドア' }
                 }},
-                'mitaka': { name: '三鷹駅', facilities: { 'stairs-center': { name: '中央改札口・出口階段', car: 5, door: '3番ドア' } }}
+                'mitaka': { name: '三鷹駅 (当駅始発ホーム)', facilities: { 
+                    'escalator-6': { name: '上りエスカレーター (南口・北口・6号車)', car: 6, door: '2番ドア' },
+                    'stairs-5': { name: '上り階段 (5号車前方)', car: 5, door: '4番ドア' },
+                    'stairs-3': { name: '上り階段 (アトレヴィ改札・3号車前方)', car: 3, door: '4番ドア' },
+                    'elevator-3': { name: 'エレベーター (3号車中方)', car: 3, door: '2番ドア' },
+                    'escalator-2': { name: '上りエスカレーター (2号車中方)', car: 2, door: '2番ドア' }
+                }}
             }},
-            down: { title: '総武線 各駅停車 (三鷹方面行)', front: '三鷹方面 →', back: '← 千葉方面', stations: {
+            down: { title: '総武線 各駅停車 (三鷹終点ホーム)', front: '三鷹降車通路 →', back: '← 後方', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 
                     'stairs-exit': { name: 'JR中央改札口・地上出口 (前方・上り階段)', car: 4, door: '2番ドア' },
                     'elevator': { name: 'エレベーター (前方)', car: 3, door: '2番ドア' },
                     'subway': { name: '地下鉄各線 のりかえ口 (後方・下り階段)', car: 7, door: '1番ドア' }
                 }},
-                'mitaka': { name: '三鷹駅 (終点)', facilities: { 'stairs-exit': { name: '中央改札・出口階段', car: 5, door: '4番ドア' } }}
+                'mitaka': { name: '三鷹駅 (降車専用/終点)', facilities: { 
+                    'stairs-exit': { name: '中央改札・出口方面 (ホーム中央階段)', car: 5, door: '4番ドア' }
+                }}
             }}
         },
         chuo: { color: '#f15a22', maxCars: 12, isLight: false, labelUp: '上り (東京方面)', labelDown: '下り (高尾方面)',
@@ -100,7 +107,7 @@
                 'kokubunji': { name: '国分寺駅', facilities: { 'stairs-main': { name: '中央改札・西武線乗換 (4号車)', car: 4, door: '3番ドア' } }}
             }},
             down: { title: '中央線 快速 (高尾方面行)', front: '高尾方面 →', back: '← 東京方面', stations: {
-                'kokubunji': { name: '国分寺駅', facilities: { 'escalator-down1': { name: '西武線乗換エスカレーター (9号車)', car: 9, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター (8号車)', car: 8, door: '2番ドア' }, 'stairs-down': { name: '改札口方面階段 (7号車)', car: 7, door: '1番ドア' } }}
+                'kokubunji': { name: '国分寺駅', facilities: { 'escalator-down1': { name: '西武線乗換エスカレーター (9号車)', car: 9, door: '1番ドア' }, 'elevator-down': { name: 'エレベーター (8号車)', car: 8, door: '2番ドア' } }}
             }}
         },
         yamanote: { color: '#80c241', maxCars: 11, isLight: true, labelUp: '内回り (品川方面)', labelDown: '外回り (上野方面)',
@@ -123,7 +130,7 @@
             up: { title: '有楽町線 (新木場方面行)', front: '新木場方面 →', back: '← 和光市方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 7, door: '2番ドア' }, 'shinjuku-transfer': { name: '都営新宿線 のりかえ連絡通路', car: 1, door: '1番ドア' } }}
             }},
-            down: { title: 'Keep line (和光市方面行)', front: '和光市方面 →', back: '← 新木場方面', stations: {
+            down: { title: '有楽町線 (和光市方面行)', front: '和光市方面 →', back: '← 新木場方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 4, door: '3番ドア' } }}
             }}
         },
@@ -220,8 +227,9 @@
             tc.appendChild(c);
         }
     }
-    
     window.onload = function() { switchLine(); };
 </script>
 </body>
 </html>
+
+    
