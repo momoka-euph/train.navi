@@ -71,9 +71,10 @@
 
     <a href="https://wadattsu261.com" target="_blank" class="wadattsu-link">わだっつログで元の調査情報を確認</a>
 </div>
-<script>
+
+    <script>
     const stationData = {
-        sobu: { color: '#fdd000', maxCars: 10, isLight: true, labelUp: '上り (千葉方面)', labelDown: '下り (当駅始発/終点)',
+        sobu: { color: '#fdd000', maxCars: 10, isLight: true, labelUp: '上り (千葉方面)', labelDown: '下り (三鷹方面)',
             up: { title: '総武線 各駅停車 (千葉方面行)', front: '千葉方面 →', back: '← 三鷹方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 
                     'yurakucho': { name: '有楽町線・都営新宿線 のりかえ (前方・下り階段)', car: 4, door: '4番ドア' },
@@ -96,8 +97,12 @@
                     'elevator': { name: 'エレベーター (前方)', car: 3, door: '2番ドア' },
                     'subway': { name: '地下鉄各線 のりかえ口 (後方・下り階段)', car: 7, door: '1番ドア' }
                 }},
-                'mitaka': { name: '三鷹駅 (降車専用/終点)', facilities: { 
-                    'stairs-exit': { name: '中央改札・出口方面 (ホーム中央階段)', car: 5, door: '4番ドア' }
+                'mitaka': { name: '三鷹駅 (終点/降車ホーム)', facilities: { 
+                    'escalator-6-down': { name: 'エスカレーター (南口・北口・6号車)', car: 6, door: '2番ドア' },
+                    'stairs-5-down': { name: '階段 (ホーム中ほど・5号車)', car: 5, door: '4番ドア' },
+                    'stairs-3-down': { name: '階段 (アトレヴィ改札・3号車前方)', car: 3, door: '4番ドア' },
+                    'elevator-3-down': { name: 'エレベーター (3号車中方)', car: 3, door: '2番ドア' },
+                    'escalator-2-down': { name: 'エスカレーター (2号車中方)', car: 2, door: '2番ドア' }
                 }}
             }}
         },
@@ -130,7 +135,7 @@
             up: { title: '有楽町線 (新木場方面行)', front: '新木場方面 →', back: '← 和光市方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 7, door: '2番ドア' }, 'shinjuku-transfer': { name: '都営新宿線 のりかえ連絡通路', car: 1, door: '1番ドア' } }}
             }},
-            down: { title: '有楽町線 (和光市方面行)', front: '和光市方面 →', back: '← 新木場方面', stations: {
+            down: { title: '有楽町線 (和光市方面行)', front: '和光市方面 →', back: '← 新新木場方面', stations: {
                 'ichigaya': { name: '市ヶ谷駅', facilities: { 'sobu-transfer': { name: 'JR総武線 のりかえ階段', car: 4, door: '3番ドア' } }}
             }}
         },
@@ -231,5 +236,3 @@
 </script>
 </body>
 </html>
-
-    
